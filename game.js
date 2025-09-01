@@ -91,6 +91,9 @@ class DogSkateGame {
             background: () => {} // Пустая функция
         };
         
+        // Определяем мобильное устройство
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
         this.setupEventListeners();
         this.draw();
     }
@@ -345,8 +348,9 @@ class DogSkateGame {
     }
     
     createJumpParticles() {
-        // Создаем частицы при прыжке
-        for (let i = 0; i < 8; i++) {
+        // Создаем частицы при прыжке (меньше для мобильных)
+        const particleCount = this.isMobile ? 4 : 8;
+        for (let i = 0; i < particleCount; i++) {
             this.particles.push({
                 x: this.player.x + this.player.width / 2,
                 y: this.player.y + this.player.height,
@@ -360,8 +364,9 @@ class DogSkateGame {
     }
     
     createLandingParticles() {
-        // Создаем частицы при приземлении
-        for (let i = 0; i < 12; i++) {
+        // Создаем частицы при приземлении (меньше для мобильных)
+        const particleCount = this.isMobile ? 6 : 12;
+        for (let i = 0; i < particleCount; i++) {
             this.particles.push({
                 x: this.player.x + this.player.width / 2 + (Math.random() - 0.5) * 40,
                 y: this.player.y + this.player.height,
@@ -632,43 +637,73 @@ class DogSkateGame {
     }
     
     drawBackground() {
-        // Эффект размытия при высокой скорости
-        const blurAmount = Math.min(this.gameSpeed * 0.5, 10);
-        this.ctx.filter = `blur(${blurAmount}px)`;
-        
-        // Градиентное небо
-        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.gameHeight);
-        gradient.addColorStop(0, '#0a0a0a');
-        gradient.addColorStop(1, '#1a1a1a');
-        this.ctx.fillStyle = gradient;
-        this.ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
-        
-        // Звезды с эффектом скорости
-        this.ctx.fillStyle = '#00ff41';
-        for (let i = 0; i < 50; i++) {
-            const x = (i * 37) % this.gameWidth;
-            const y = (i * 73) % (this.gameHeight - 100);
-            const size = 1 + (this.gameSpeed * 0.1);
-            this.ctx.fillRect(x, y, size, size);
+        // Упрощенный фон для мобильных устройств
+        if (this.isMobile) {
+            // Простой черный фон
+            this.ctx.fillStyle = '#000';
+            this.ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
+            
+            // Простые звезды
+            this.ctx.fillStyle = '#00ff41';
+            for (let i = 0; i < 20; i++) {
+                const x = (i * 37) % this.gameWidth;
+                const y = (i * 73) % (this.gameHeight - 100);
+                this.ctx.fillRect(x, y, 1, 1);
+            }
+            
+            // Земля
+            this.ctx.fillStyle = '#00ff41';
+            this.ctx.fillRect(0, this.groundY, this.gameWidth, this.gameHeight - this.groundY);
+            
+            // Простая дорожная разметка
+            this.ctx.strokeStyle = '#000';
+            this.ctx.lineWidth = 2;
+            this.ctx.setLineDash([15, 15]);
+            this.ctx.lineDashOffset = this.backgroundX;
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, this.groundY + 10);
+            this.ctx.lineTo(this.gameWidth, this.groundY + 10);
+            this.ctx.stroke();
+            this.ctx.setLineDash([]);
+        } else {
+            // Полная графика для десктопа
+            const blurAmount = Math.min(this.gameSpeed * 0.5, 10);
+            this.ctx.filter = `blur(${blurAmount}px)`;
+            
+            // Градиентное небо
+            const gradient = this.ctx.createLinearGradient(0, 0, 0, this.gameHeight);
+            gradient.addColorStop(0, '#0a0a0a');
+            gradient.addColorStop(1, '#1a1a1a');
+            this.ctx.fillStyle = gradient;
+            this.ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
+            
+            // Звезды с эффектом скорости
+            this.ctx.fillStyle = '#00ff41';
+            for (let i = 0; i < 50; i++) {
+                const x = (i * 37) % this.gameWidth;
+                const y = (i * 73) % (this.gameHeight - 100);
+                const size = 1 + (this.gameSpeed * 0.1);
+                this.ctx.fillRect(x, y, size, size);
+            }
+            
+            // Земля
+            this.ctx.fillStyle = '#00ff41';
+            this.ctx.fillRect(0, this.groundY, this.gameWidth, this.gameHeight - this.groundY);
+            
+            // Дорожная разметка с эффектом скорости
+            this.ctx.strokeStyle = '#000';
+            this.ctx.lineWidth = 3 + (this.gameSpeed * 0.2);
+            this.ctx.setLineDash([20, 20]);
+            this.ctx.lineDashOffset = this.backgroundX;
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, this.groundY + 10);
+            this.ctx.lineTo(this.gameWidth, this.groundY + 10);
+            this.ctx.stroke();
+            this.ctx.setLineDash([]);
+            
+            // Сброс фильтра
+            this.ctx.filter = 'none';
         }
-        
-        // Земля
-        this.ctx.fillStyle = '#00ff41';
-        this.ctx.fillRect(0, this.groundY, this.gameWidth, this.gameHeight - this.groundY);
-        
-        // Дорожная разметка с эффектом скорости
-        this.ctx.strokeStyle = '#000';
-        this.ctx.lineWidth = 3 + (this.gameSpeed * 0.2);
-        this.ctx.setLineDash([20, 20]);
-        this.ctx.lineDashOffset = this.backgroundX;
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.groundY + 10);
-        this.ctx.lineTo(this.gameWidth, this.groundY + 10);
-        this.ctx.stroke();
-        this.ctx.setLineDash([]);
-        
-        // Сброс фильтра
-        this.ctx.filter = 'none';
     }
     
     drawPlayer() {
@@ -894,6 +929,15 @@ class DogSkateGame {
     
     gameLoop(currentTime = 0) {
         if (!this.gameRunning || this.gamePaused) return;
+        
+        // Ограничиваем FPS для мобильных устройств
+        const targetFPS = this.isMobile ? 30 : 60;
+        const frameInterval = 1000 / targetFPS;
+        
+        if (currentTime - this.lastTime < frameInterval) {
+            this.animationId = requestAnimationFrame((time) => this.gameLoop(time));
+            return;
+        }
         
         const deltaTime = currentTime - this.lastTime;
         this.lastTime = currentTime;
