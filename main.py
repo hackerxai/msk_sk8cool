@@ -8,7 +8,7 @@ import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from config import BOT_TOKEN, ADMIN_ID
-from handlers import start, training_info, about_school, contact_coach, main_menu, select_park, show_park_info, confirm_park, select_date, select_period, select_time, equipment_check, equipment_selection, confirm_booking, final_booking_confirm, booking_cancel, admin_approve, admin_reject, my_progress, leaderboard, coach_command, play_game, error_handler
+from handlers import start, training_info, about_school, contact_coach, main_menu, select_park, show_park_info, confirm_park, select_date, select_period, select_time, equipment_check, equipment_selection, confirm_booking, final_booking_confirm, booking_cancel, admin_approve, admin_reject, my_progress, leaderboard, coach_command, play_game, create_channel_post, error_handler
 from web_server import start_web_server
 
 # Настройка логирования
@@ -31,6 +31,7 @@ def main():
     # Добавляем обработчики команд
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("coach", coach_command))
+    application.add_handler(CommandHandler("post", create_channel_post))
     
     # Добавляем обработчики callback-запросов
     application.add_handler(CallbackQueryHandler(training_info, pattern="^training_info$"))

@@ -57,6 +57,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode='Markdown'
         )
         return
+    elif context.args and context.args[0] == "training":
+        # Пользователь перешел по ссылке для записи на тренировку
+        await training_info(update, context)
+        return
+    elif context.args and context.args[0] == "game":
+        # Пользователь перешел по ссылке для игры
+        await play_game(update, context)
+        return
     
     # Обычное приветствие
     keyboard = [
@@ -866,6 +874,54 @@ async def play_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup,
         parse_mode='Markdown'
     )
+
+async def create_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Создание поста в канал с кнопкой записи"""
+    # Проверяем, что это админ
+    if update.message.from_user.id != ADMIN_ID:
+        await update.message.reply_text("❌ У вас нет прав для этого действия.")
+        return
+    
+    # ID канала
+    channel_id = -1002879902839
+    
+    # Создаем кнопку для записи
+    keyboard = [
+        [InlineKeyboardButton("🏂 Записаться на тренировку", url="https://t.me/msk_sk8coolbot?start=training")],
+        [InlineKeyboardButton("🎮 Играть в игру", url="https://t.me/msk_sk8coolbot?start=game")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    # Текст поста
+    post_text = """
+🛹 *MSK SK8COOL - Школа скейтбординга!*
+
+🏂 *Записывайся на тренировки:*
+• Групповые занятия 2-4 человека
+• Индивидуальные тренировки  
+• Опытные тренеры с сертификатами
+• Занятия в лучших парках Москвы
+
+🎮 *А еще у нас есть крутая игра!*
+Попробуй управлять собакой на скейтборде!
+
+💰 *Стоимость:* 1500₽ за занятие
+⏱️ *Длительность:* 60-90 минут
+
+👇 *Нажми кнопку ниже для записи!*
+"""
+    
+    try:
+        await context.bot.send_message(
+            chat_id=channel_id,
+            text=post_text,
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
+        )
+        await update.message.reply_text("✅ Пост успешно отправлен в канал!")
+    except Exception as e:
+        logger.error(f"Ошибка при отправке поста в канал: {e}")
+        await update.message.reply_text(f"❌ Ошибка: {e}")
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик ошибок"""
