@@ -845,7 +845,7 @@ async def play_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.callback_query.answer()
     
     # Получаем URL для игры (локально или на сервере)
-    game_url = os.getenv('GAME_URL', 'http://localhost:8080/game')
+    game_url = os.getenv('GAME_URL', 'https://web-production-af17e.up.railway.app/game')
     
     keyboard = [
         [InlineKeyboardButton("🎮 Играть!", web_app=WebAppInfo(url=game_url))],
