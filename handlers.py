@@ -885,6 +885,19 @@ async def create_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE
     # ID канала
     channel_id = -1002879902839
     
+    # Сначала проверим, может ли бот отправить сообщение в канал
+    try:
+        test_message = "🧪 Тест отправки сообщения"
+        await context.bot.send_message(
+            chat_id=channel_id,
+            text=test_message
+        )
+        await update.message.reply_text("✅ Бот может отправлять сообщения в канал!")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка доступа к каналу: {e}")
+        await update.message.reply_text("🔧 Решение:\n1. Добавь бота @msk_sk8coolbot в канал как администратора\n2. Дай права на отправку сообщений\n3. Попробуй команду /post снова")
+        return
+    
     # Создаем кнопку для записи
     keyboard = [
         [InlineKeyboardButton("🏂 Записаться на тренировку", url="https://t.me/msk_sk8coolbot?start=training")],
