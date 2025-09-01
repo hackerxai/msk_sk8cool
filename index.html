@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Собака на Скейте</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🐕 Собака на Скейте</h1>
+            <div class="score-container">
+                <span class="score">Счёт: <span id="score">0</span></span>
+                <span class="high-score">Рекорд: <span id="highScore">0</span></span>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="300"></canvas>
+        
+        <div class="game-controls">
+            <div class="instructions">
+                <p>Нажми <strong>ПРОБЕЛ</strong> или <strong>кликни</strong> чтобы прыгнуть</p>
+                <p>Избегай препятствий!</p>
+            </div>
+            <button id="startButton" class="start-btn">Начать Игру</button>
+            <button id="pauseButton" class="pause-btn" style="display: none;">Пауза</button>
+        </div>
+        
+        <div class="game-over" id="gameOver" style="display: none;">
+            <h2>Игра Окончена!</h2>
+            <p>Ваш счёт: <span id="finalScore">0</span></p>
+            <button id="restartButton" class="restart-btn">Играть Снова</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+    <script src="telegram-integration.js"></script>
+</body>
+</html>
